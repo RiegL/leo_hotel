@@ -6,33 +6,32 @@ import { User } from '@prisma/client';
 export class UserController {
     constructor(private userService: UserService){}
 
-
     @Get()
-    async list(){
-       return  await this.userService.list();
+     listUsers(){
+       return this.userService.listUsers();
     }
 
     @Get(':id')
-    async getById(@Param('id') id:string){
-        return  await this.userService.getById(id);
+     getById(@Param('id') id:string){
+        return   this.userService.getById(id);
     }
 
 
     @Post()
     @HttpCode(201)
-    async createUsers(@Body() body:any){
-      return await this.userService.createUsers(body);
+     createUsers(@Body() body:any){
+      return  this.userService.createUsers(body);
     }
 
     @Patch(':id')
     @HttpCode(200)
-    async update(@Param('id') id:string, @Body() body:any){
-        return await this.userService.update(id, body);
+     update(@Param('id') id:string, @Body() body:any){
+        return  this.userService.update(id, body);
     }
     
     @Delete(':id')
     @HttpCode(204)
-    async remove(@Param('id') id:string){
-        return await this.userService.remove(id);
+     remove(@Param('id') id:string){
+        return  this.userService.remove(id);
     }
 }
