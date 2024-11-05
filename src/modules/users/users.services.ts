@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
-import { NotFoundError } from 'rxjs';
+
 
 @Injectable()
 export class UserService {
@@ -15,31 +15,32 @@ export class UserService {
   async createUsers(body: any): Promise<User> {
     return await this.prisma.user.create({ data: body });
   }
+
   async listUsers() {
     return await this.prisma.user.findMany();
   }
 
   async getById(id: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: Number(id) },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    const user = await this.isIdExists(id);
     return user;
   }
   async update(id: string, body: any) {
+    await this.isIdExists(id);
     return await this.prisma.user.update({
       where: { id: Number(id) },
       data: body,
     });
-    
   }
-  
-  async remove(id: string) {
-    const user = await this.prisma.user.delete({ where: { id: Number(id) } });
 
+  async remove(id: string) {
+   await this.isIdExists(id);
+   return await this.prisma.user.delete({ where: { id: Number(id) } });
+  }
+
+  private async isIdExists(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: Number(id) },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
