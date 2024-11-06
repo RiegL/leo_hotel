@@ -1,7 +1,8 @@
-import { Controller,Get, Post, Body, HttpCode, Param, Patch, Delete, Res} from '@nestjs/common';
+import { Controller,Get, Post, Body, HttpCode, Param, Patch, Delete, Res, ParseIntPipe} from '@nestjs/common';
 import { UserService } from './users.services';
 import { User } from '@prisma/client';
 import { CreateUserDto } from './domain/dto/createUser.dto';
+import { UpdateUserDto } from './domain/dto/updateUser.dto';
 
 @Controller('users')
 export class UserController {
@@ -13,7 +14,7 @@ export class UserController {
     }
 
     @Get(':id')
-     getById(@Param('id') id:string){
+     getById(@Param('id', ParseIntPipe) id:number){
         return   this.userService.getById(id);
     }
 
@@ -26,13 +27,13 @@ export class UserController {
 
     @Patch(':id')
     @HttpCode(200)
-     update(@Param('id') id:string, @Body() body:any){
+     update(@Param('id',ParseIntPipe) id:number, @Body() body:UpdateUserDto){
         return  this.userService.update(id, body);
     }
     
     @Delete(':id')
     @HttpCode(204)
-     remove(@Param('id') id:string){
+     remove(@Param('id',ParseIntPipe) id:number){
         return  this.userService.remove(id);
     }
 }
