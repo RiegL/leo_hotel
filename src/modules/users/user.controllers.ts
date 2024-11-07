@@ -1,13 +1,14 @@
-import { Controller,Get, Post, Body, HttpCode, Param, Patch, Delete, Res, ParseIntPipe} from '@nestjs/common';
+import { Controller,Get, Post, Body, HttpCode, Param, Patch, Delete, Res, ParseIntPipe, UseInterceptors} from '@nestjs/common';
 import { UserService } from './users.services';
 import { User } from '@prisma/client';
 import { CreateUserDto } from './domain/dto/createUser.dto';
 import { UpdateUserDto } from './domain/dto/updateUser.dto';
+import { LoggingInterceptor } from 'src/shared/interceptors/logging.interceptor';
 
 @Controller('users')
 export class UserController {
     constructor(private userService: UserService){}
-
+    
     @Get()
      listUsers(){
        return this.userService.listUsers();
