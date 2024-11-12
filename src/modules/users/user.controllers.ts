@@ -1,9 +1,10 @@
 // Importamos os decoradores e classes necessárias do NestJS, além do serviço UserService, que contém a lógica do usuário.
-import { Controller, Get, Post, Body, HttpCode, Param, Patch, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpCode, Patch, Delete } from '@nestjs/common';
 import { UserService } from './users.services';
 import { User } from '@prisma/client';
 import { CreateUserDto } from './domain/dto/createUser.dto';
 import { UpdateUserDto } from './domain/dto/updateUser.dto';
+import { ParamId } from 'src/shared/decorators/paramId.decorator';
 
 // Definimos o controlador de rota para 'users' e injetamos o UserService para manipulação de dados de usuário.
 @Controller('users')
@@ -19,7 +20,7 @@ export class UserController {
 
     // Define a rota GET com parâmetro id, usando ParseIntPipe para validar que o id é um número.
     @Get(':id')
-    getById(@Param('id', ParseIntPipe) id: number) {
+    getById(@ParamId() id: number) {
         return this.userService.getById(id);
     }
 
@@ -33,14 +34,14 @@ export class UserController {
     // Define a rota PATCH para atualizar um usuário específico por id, aplicando ParseIntPipe ao parâmetro.
     @Patch(':id')
     @HttpCode(200)
-    update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
+    update(@ParamId() id: number, @Body() body: UpdateUserDto) {
         return this.userService.update(id, body);
     }
     
     // Define a rota DELETE para remover um usuário específico pelo id com status 204.
     @Delete(':id')
     @HttpCode(204)
-    remove(@Param('id', ParseIntPipe) id: number) {
+    remove(@ParamId() id: number) {
         return this.userService.remove(id);
     }
 }
