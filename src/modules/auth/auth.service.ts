@@ -8,18 +8,20 @@ import * as bcrypt from 'bcrypt';
 import { AuthRegisterUserDto } from './domain/dto/authRegister.dto';
 import { UserService } from '../users/users.services';
 import { CreateUserDto } from '../users/domain/dto/createUser.dto';
+import { AuthResetPasswordDTO } from './domain/dto/AuthResetPassword.dto';
+import { ValidateTokenDTO } from './domain/dto/validateToken.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {}
 
-  async generateJWT(user: User) {
+  async generateJWT(user: User, expiresIn: string = '1d') {
     const payload = { sub: user.id, name: user.name };
-    const options = { expiresIn: '1d', issuer: 'leo_hotel', audience: 'users' };
+    const options = { expiresIn: expiresIn, issuer: 'leo_hotel', audience: 'users' };
 
     return { access_token: this.jwtService.sign(payload, options) };
   }
@@ -27,22 +29,68 @@ export class AuthService {
   async login({ email, password }: AuthLoginDto) {
     const user = await this.userService.findByEmail(email);
 
-    if (!user || await bcrypt.compare(password, user.password)) {
-      throw new UnauthorizedException ("E-mail ou senha inválidos" );
+    if (!user) {
+      throw new UnauthorizedException('E-mail ou senha inválidos');
     }
+
+    const isPasswordValid =
+      password && user.password
+        ? await bcrypt.compare(password, user.password)
+        : false;
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('E-mail ou senha inválidos');
+    }
+
     return await this.generateJWT(user);
   }
 
-  async register(body: AuthRegisterUserDto){
-
-    const newUser : CreateUserDto = {
+  async register(body: AuthRegisterUserDto) {
+    const newUser: CreateUserDto = {
       email: body.email,
       name: body.name,
       password: body.password,
       role: body.role ?? Role.USER,
     };
     const user = await this.userService.createUsers(newUser);
-    
+
     return await this.generateJWT(user);
   }
+
+  async reset({ token, password }: AuthResetPasswordDTO) {
+    const { valid, decoded } = await this.validateToken(token);
+    console.log(valid, decoded);
+    if (!valid) throw new UnauthorizedException('Token inválido');
+
+    const user = await this.userService.update(Number(decoded.sub), {
+      password,
+    });
+
+    return await this.generateJWT(user);
+  }
+
+  async forgot(email: string) {
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('E-mail inválido');
+    }
+
+    const token = this.generateJWT(user, '30m');
+    return token;
+  }
+
+  private async validateToken(token: string): Promise<ValidateTokenDTO> {
+    try {
+      const decoded = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET,
+        issuer: 'leo_hotel',
+        audience: 'users',
+      });
+      return { valid: true, decoded };
+    } catch (error) {
+      return { valid: false, message: error.message };
+    }
+  }
+
+
 }
