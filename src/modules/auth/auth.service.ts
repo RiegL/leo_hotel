@@ -60,6 +60,7 @@ export class AuthService {
   async reset({ token, password }: AuthResetPasswordDTO) {
     const { valid, decoded } = await this.validateToken(token);
     console.log(valid, decoded);
+    
     if (!valid) throw new UnauthorizedException('Token inválido');
 
     const user = await this.userService.update(Number(decoded.sub), {
@@ -79,7 +80,7 @@ export class AuthService {
     return token;
   }
 
-  private async validateToken(token: string): Promise<ValidateTokenDTO> {
+ async validateToken(token: string): Promise<ValidateTokenDTO> {
     try {
       const decoded = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
@@ -91,6 +92,5 @@ export class AuthService {
       return { valid: false, message: error.message };
     }
   }
-
 
 }
