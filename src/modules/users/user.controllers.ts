@@ -9,9 +9,10 @@ import { User } from 'src/shared/decorators/user.decorator';
 import { Role, User as UserType } from '@prisma/client';
 import { Roles } from 'src/shared/decorators/roles.decorators';
 import { RoleGuard } from 'src/shared/guards/role.guards';
+import { UserMatch } from 'src/shared/guards/userMatch.guard';
 
 // Definimos o controlador de rota para 'users' e injetamos o UserService para manipulação de dados de usuário.
-@UseGuards(RoleGuard, AuthGuard)
+@UseGuards(AuthGuard,RoleGuard )
 @Controller('users')
 export class UserController {
     // Injetamos UserService através do construtor, para usá-lo nos métodos de controle.
@@ -39,6 +40,7 @@ export class UserController {
     }
 
     // Define a rota PATCH para atualizar um usuário específico por id, aplicando ParseIntPipe ao parâmetro.
+    @UseGuards(UserMatch)
     @Patch(':id')
     @HttpCode(200)
     update(@ParamId() id: number, @Body() body: UpdateUserDto) {
@@ -46,6 +48,7 @@ export class UserController {
     }
     
     // Define a rota DELETE para remover um usuário específico pelo id com status 204.
+    @UseGuards(UserMatch)
     @Delete(':id')
     @HttpCode(204)
     remove(@ParamId() id: number) {
