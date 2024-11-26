@@ -20,6 +20,15 @@ export class UserService {
 
   // Método para criar um usuário com base nos dados de CreateUserDto.
   async createUsers(body: CreateUserDto): Promise<User> {
+
+    const existingEmail = await this.prisma.user.findUnique({
+      where: { email: body.email },
+    })
+
+    if (existingEmail) {
+      throw new HttpException('E-mail já cadastrado', HttpStatus.BAD_REQUEST);
+    }
+
     body.password = await this.hasPassword(body.password);
     return await this.prisma.user.create({
       data: body,
