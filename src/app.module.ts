@@ -7,9 +7,12 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 // Importamos o módulo UserModule, que contém o controlador e o serviço para gerenciar usuários.
 import { UserModule } from './modules/users/user.module';
 
+// Importamos o módulo AuthModule, que contém o controlador e o serviço de autenticação.
+import { AuthModule } from './modules/auth/auth.module';
+
 // Definimos o módulo principal da aplicação, AppModule.
 @Module({
   // Especificamos que o AppModule importa PrismaModule e UserModule.
-  imports: [PrismaModule , UserModule]
+  imports: [PrismaModule , UserModule, AuthModule]
 })
 export class AppModule {}

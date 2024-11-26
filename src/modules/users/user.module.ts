@@ -1,14 +1,15 @@
 // Importamos os módulos e classes necessários do NestJS e o UserIdCheckMiddleware para validar o id de usuário.
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
+import { forwardRef, MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
 import { UserController } from "./user.controllers";
 import { UserService } from "./users.services";
 import { PrismaModule } from "../prisma/prisma.module";
 import { UserIdCheckMiddleware } from "src/shared/middlewares/userIdCheck.middleware";
+import { AuthModule } from "../auth/auth.module";
 
 // Definimos o módulo UserModule, que agrupa o controlador e o serviço do usuário.
 @Module({
     // Importa o módulo PrismaModule para uso do PrismaService.
-    imports: [PrismaModule],
+    imports: [PrismaModule, forwardRef(()=> AuthModule)],
     // Define o UserController como controlador do módulo.
     controllers: [UserController],
     // Define o UserService como provedor do módulo.
