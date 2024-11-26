@@ -6,10 +6,12 @@ import { UpdateUserDto } from './domain/dto/updateUser.dto';
 import { ParamId } from 'src/shared/decorators/paramId.decorator';
 import { AuthGuard } from 'src/shared/guards/auth.guards';
 import { User } from 'src/shared/decorators/user.decorator';
-import { User as UserType } from '@prisma/client';
+import { Role, User as UserType } from '@prisma/client';
+import { Roles } from 'src/shared/decorators/roles.decorators';
+import { RoleGuard } from 'src/shared/guards/role.guards';
 
 // Definimos o controlador de rota para 'users' e injetamos o UserService para manipulação de dados de usuário.
-@UseGuards(AuthGuard)
+@UseGuards(RoleGuard, AuthGuard)
 @Controller('users')
 export class UserController {
     // Injetamos UserService através do construtor, para usá-lo nos métodos de controle.
@@ -29,6 +31,7 @@ export class UserController {
     }
 
     // Define a rota POST para criar um novo usuário com status 201 e valida o corpo da requisição com CreateUserDto.
+    @Roles(Role.ADMIN)
     @Post()
     @HttpCode(201)
     createUsers(@Body() body: CreateUserDto) {
