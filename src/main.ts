@@ -13,6 +13,10 @@ async function bootstrap() {
 
   // Usamos o ValidationPipe globalmente, para que todas as requisições passem por validação.
   app.useGlobalPipes(new ValidationPipe());
+  app.enableCors({
+    origin: ['http://localhost:3000'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  });
 
   // Usamos o LoggingInterceptor globalmente, para que todas as requisições sejam registradas.
   app.useGlobalInterceptors(new LoggingInterceptor);

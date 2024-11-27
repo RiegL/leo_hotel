@@ -9,10 +9,27 @@ import { UserModule } from './modules/users/user.module';
 
 // Importamos o módulo AuthModule, que contém o controlador e o serviço de autenticação.
 import { AuthModule } from './modules/auth/auth.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 // Definimos o módulo principal da aplicação, AppModule.
 @Module({
   // Especificamos que o AppModule importa PrismaModule e UserModule.
-  imports: [PrismaModule , UserModule, AuthModule]
+  imports: [
+    PrismaModule,
+    UserModule,
+    AuthModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 5000,
+        limit: 3,
+      },
+    ]),
+  ],
+  providers: [
+    {
+      provide: 'APP_GUARD',
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

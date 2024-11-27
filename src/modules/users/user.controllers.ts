@@ -10,9 +10,10 @@ import { Role, User as UserType } from '@prisma/client';
 import { Roles } from 'src/shared/decorators/roles.decorators';
 import { RoleGuard } from 'src/shared/guards/role.guards';
 import { UserMatch } from 'src/shared/guards/userMatch.guard';
+import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 
 // Definimos o controlador de rota para 'users' e injetamos o UserService para manipulação de dados de usuário.
-@UseGuards(AuthGuard,RoleGuard )
+@UseGuards(AuthGuard,RoleGuard,ThrottlerGuard )
 @Controller('users')
 export class UserController {
     // Injetamos UserService através do construtor, para usá-lo nos métodos de controle.
