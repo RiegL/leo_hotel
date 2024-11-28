@@ -33,7 +33,7 @@ export class UserController {
     }
 
     // Define a rota POST para criar um novo usuário com status 201 e valida o corpo da requisição com CreateUserDto.
-    @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN, Role.USER)
     @Post()
     @HttpCode(201)
     createUsers(@Body() body: CreateUserDto) {
