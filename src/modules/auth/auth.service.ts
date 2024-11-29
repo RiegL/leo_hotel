@@ -3,20 +3,21 @@ import { JwtService } from '@nestjs/jwt';
 import { Role, User } from '@prisma/client';
 import { access } from 'fs';
 import { AuthLoginDto } from './domain/dto/authLogin.dto';
-import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { AuthRegisterUserDto } from './domain/dto/authRegister.dto';
 import { UserService } from '../users/users.services';
 import { CreateUserDto } from '../users/domain/dto/createUser.dto';
 import { AuthResetPasswordDTO } from './domain/dto/AuthResetPassword.dto';
 import { ValidateTokenDTO } from './domain/dto/validateToken.dto';
+import { MailerService } from '@nestjs-modules/mailer';
+import { templateHTML } from './utils/templateHTML';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly prisma: PrismaService,
     private readonly userService: UserService,
+    private readonly mailerService: MailerService
   ) {}
 
   async generateJWT(user: User, expiresIn: string = '1d') {
@@ -76,8 +77,14 @@ export class AuthService {
       throw new UnauthorizedException('E-mail inválido');
     }
 
-    const token = this.generateJWT(user, '30m');
-    return token;
+    const token = await this.generateJWT(user, '30m');
+
+    await this.mailerService.sendMail({
+      to: user.email,
+      subject: 'Recuperação de senha - Leo Hotel',
+      html: templateHTML(user.name, token.access_token),
+    });
+    return `O código de verificação foi enviado para o e-mail ${user.email}`;
   }
 
  async validateToken(token: string): Promise<ValidateTokenDTO> {

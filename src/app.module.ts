@@ -10,6 +10,7 @@ import { UserModule } from './modules/users/user.module';
 // Importamos o módulo AuthModule, que contém o controlador e o serviço de autenticação.
 import { AuthModule } from './modules/auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 // Definimos o módulo principal da aplicação, AppModule.
 @Module({
@@ -24,6 +25,12 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
         limit: 3,
       },
     ]),
+    MailerModule.forRoot({
+      transport: process.env.SMTP,
+      defaults: {
+        from: `leo_hotel <${process.env.EMAIL_USER}>`,
+      }
+    })
   ],
   providers: [
     {

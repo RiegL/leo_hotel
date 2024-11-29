@@ -1,5 +1,5 @@
 // Importamos os decoradores e classes necessárias do NestJS, além do serviço UserService, que contém a lógica do usuário.
-import { Controller, Get, Post, Body, HttpCode, Patch, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpCode, Patch, Delete, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UserService } from './users.services';
 import { CreateUserDto } from './domain/dto/createUser.dto';
 import { UpdateUserDto } from './domain/dto/updateUser.dto';
@@ -11,6 +11,7 @@ import { Roles } from 'src/shared/decorators/roles.decorators';
 import { RoleGuard } from 'src/shared/guards/role.guards';
 import { UserMatch } from 'src/shared/guards/userMatch.guard';
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 // Definimos o controlador de rota para 'users' e injetamos o UserService para manipulação de dados de usuário.
 @UseGuards(AuthGuard,RoleGuard,ThrottlerGuard )
@@ -54,5 +55,12 @@ export class UserController {
     @HttpCode(204)
     remove(@ParamId() id: number) {
         return this.userService.remove(id);
+    }
+
+    @UseInterceptors(FileInterceptor('avatar'))
+    @Post('avatar')
+    uploadAvatar(@UploadedFile() avatar: Express.Multer.File) {
+        console.log(avatar);
+        return
     }
 }

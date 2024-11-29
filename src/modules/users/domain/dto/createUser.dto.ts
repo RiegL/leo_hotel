@@ -1,7 +1,7 @@
 // Importamos o tipo Role do Prisma Client, que representa os possíveis valores para a função (role) do usuário.
 import { Role } from "@prisma/client";
 // Importamos os decoradores do class-validator para validar os campos.
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 // Definimos a classe CreateUserDto que representa os dados necessários para criar um usuário.
 export class CreateUserDto {
@@ -24,4 +24,7 @@ export class CreateUserDto {
     @IsString()
     @IsEnum(Role)
     role: Role;
+
+    @IsOptional()
+    avatar?:string;
 }
