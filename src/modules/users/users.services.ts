@@ -11,6 +11,8 @@ import { CreateUserDto } from './domain/dto/createUser.dto';
 import { UpdateUserDto } from './domain/dto/updateUser.dto';
 import * as bcrypt from 'bcrypt';
 import { userSelectFields } from '../prisma/utils/userSelectFields';
+import { join, resolve } from 'path';
+import { stat, unlink } from 'fs/promises';
 
 // Define o serviço UserService com a lógica de manipulação de usuários.
 @Injectable()
@@ -75,6 +77,28 @@ export class UserService {
       where: { email }
     });
   }
+
+
+  async uploadAvatar(id:number, avatarFilename:string){
+   const user = await this.isIdExists(id);
+
+    const directory = resolve(__dirname, '..', '..','..', 'uploads');
+
+    if(user.avatar){
+      const userAvatarPath = join(directory, user.avatar);
+      const userAvatarFileExists = await stat(userAvatarPath);
+
+      if(userAvatarFileExists){
+        await unlink(userAvatarPath);
+      }
+
+    }
+
+    const userUpdate = await this.update(id, {avatar: avatarFilename});
+
+    return userUpdate
+  }
+
 
   // Método privado para verificar se um usuário existe pelo id.
   private async isIdExists(id: number) {

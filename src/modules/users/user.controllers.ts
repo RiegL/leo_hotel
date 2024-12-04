@@ -1,5 +1,5 @@
 // Importamos os decoradores e classes necessárias do NestJS, além do serviço UserService, que contém a lógica do usuário.
-import { Controller, Get, Post, Body, HttpCode, Patch, Delete, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpCode, Patch, Delete, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { UserService } from './users.services';
 import { CreateUserDto } from './domain/dto/createUser.dto';
 import { UpdateUserDto } from './domain/dto/updateUser.dto';
@@ -57,10 +57,22 @@ export class UserController {
         return this.userService.remove(id);
     }
 
-    @UseInterceptors(FileInterceptor('avatar'))
     @Post('avatar')
-    uploadAvatar(@UploadedFile() avatar: Express.Multer.File) {
-        console.log(avatar);
-        return
+    uploadAvatar(
+      @User('id') id: number,
+      @UploadedFile() avatar: Express.Multer.File,
+    ) {
+      console.log('Uploaded file:', avatar); // Debug
+      if (!avatar) {
+        throw new BadRequestException('No file uploaded');
+      }
+      return this.userService.uploadAvatar(id, avatar.filename);
     }
+    
+    // @UseInterceptors(FileInterceptor('avatar'))
+    // @Post('avatar')
+    // uploadAvatar(@UploadedFile() avatar: Express.Multer.File) {
+    //     console.log(avatar);
+    //     return
+    // }
 }
