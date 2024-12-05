@@ -11,6 +11,9 @@ import { CreateUserDto } from './domain/dto/createUser.dto';
 import { UpdateUserDto } from './domain/dto/updateUser.dto';
 import * as bcrypt from 'bcrypt';
 import { userSelectFields } from '../prisma/utils/userSelectFields';
+import { join, resolve } from 'path';
+import { stat, unlink } from 'fs/promises';
+import { existsSync, mkdirSync } from 'fs';
 
 // Define o serviço UserService com a lógica de manipulação de usuários.
 @Injectable()
@@ -20,6 +23,15 @@ export class UserService {
 
   // Método para criar um usuário com base nos dados de CreateUserDto.
   async createUsers(body: CreateUserDto): Promise<User> {
+
+    const existingEmail = await this.prisma.user.findUnique({
+      where: { email: body.email },
+    })
+
+    if (existingEmail) {
+      throw new HttpException('E-mail já cadastrado', HttpStatus.BAD_REQUEST);
+    }
+
     body.password = await this.hasPassword(body.password);
     return await this.prisma.user.create({
       data: body,
@@ -66,6 +78,42 @@ export class UserService {
       where: { email }
     });
   }
+
+
+  async uploadAvatar(id: number, avatarFilename: string) {
+    const user = await this.isIdExists(id);
+  
+    // Define o diretório de uploads
+    const directory = resolve(__dirname, '..', '..', '..', 'uploads');
+  
+    // Garante que a pasta de uploads existe
+    if (!existsSync(directory)) {
+      mkdirSync(directory, { recursive: true });
+    }
+  
+    // Verifica e remove o avatar antigo, se existir
+    if (user.avatar) {
+      const userAvatarPath = join(directory, user.avatar);
+      try {
+        // Verifica se o arquivo existe antes de tentar removê-lo
+        await stat(userAvatarPath);
+        await unlink(userAvatarPath); // Remove o arquivo
+      } catch (error) {
+        if (error.code !== 'ENOENT') {
+          // Lança outros erros que não sejam "Arquivo não encontrado"
+          console.error('Erro ao verificar/remover o avatar antigo:', error);
+          throw error;
+        }
+      }
+    }
+  
+    // Atualiza o registro do usuário com o novo avatar
+    const userUpdate = await this.update(id, { avatar: avatarFilename });
+  
+    
+    return userUpdate;
+  }
+
 
   // Método privado para verificar se um usuário existe pelo id.
   private async isIdExists(id: number) {

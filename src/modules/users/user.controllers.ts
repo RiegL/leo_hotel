@@ -1,5 +1,5 @@
 // Importamos os decoradores e classes necessárias do NestJS, além do serviço UserService, que contém a lógica do usuário.
-import { Controller, Get, Post, Body, HttpCode, Patch, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpCode, Patch, Delete, UseGuards, UseInterceptors, UploadedFile, BadRequestException, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator } from '@nestjs/common';
 import { UserService } from './users.services';
 import { CreateUserDto } from './domain/dto/createUser.dto';
 import { UpdateUserDto } from './domain/dto/updateUser.dto';
@@ -9,9 +9,13 @@ import { User } from 'src/shared/decorators/user.decorator';
 import { Role, User as UserType } from '@prisma/client';
 import { Roles } from 'src/shared/decorators/roles.decorators';
 import { RoleGuard } from 'src/shared/guards/role.guards';
+import { UserMatch } from 'src/shared/guards/userMatch.guard';
+import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileValidationInterceptor } from 'src/shared/interceptors/fileValidation.interceptor';
 
 // Definimos o controlador de rota para 'users' e injetamos o UserService para manipulação de dados de usuário.
-@UseGuards(RoleGuard, AuthGuard)
+@UseGuards(AuthGuard,RoleGuard,ThrottlerGuard )
 @Controller('users')
 export class UserController {
     // Injetamos UserService através do construtor, para usá-lo nos métodos de controle.
@@ -39,6 +43,7 @@ export class UserController {
     }
 
     // Define a rota PATCH para atualizar um usuário específico por id, aplicando ParseIntPipe ao parâmetro.
+    @UseGuards(UserMatch)
     @Patch(':id')
     @HttpCode(200)
     update(@ParamId() id: number, @Body() body: UpdateUserDto) {
@@ -46,9 +51,31 @@ export class UserController {
     }
     
     // Define a rota DELETE para remover um usuário específico pelo id com status 204.
+    @UseGuards(UserMatch)
     @Delete(':id')
     @HttpCode(204)
     remove(@ParamId() id: number) {
         return this.userService.remove(id);
     }
+
+    @Post('avatar')
+    @UseInterceptors(FileInterceptor('avatar'), FileValidationInterceptor) 
+    uploadAvatar(
+      @User('id') id: number,
+      @UploadedFile(
+        new ParseFilePipe({
+          validators: [
+            new FileTypeValidator({ fileType: 'image/*' }),
+            new MaxFileSizeValidator({ maxSize: 1024 * 1024 }), 
+          ],
+        })
+      ) avatar: Express.Multer.File,
+    ) {
+      console.log('Uploaded file:', avatar); // Debug
+      if (!avatar) {
+        throw new BadRequestException('No file uploaded');
+      }
+      return this.userService.uploadAvatar(id, avatar.filename);
+    }
+    
 }
