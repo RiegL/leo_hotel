@@ -24,3 +24,17 @@ model User {
 
   @@map("users")
 }
+
+
+model Hotel {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String 
+  address     String
+  image       String?
+  price       Float
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt
+
+  @@map("hotels")
+}
