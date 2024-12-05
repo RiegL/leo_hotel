@@ -1,5 +1,5 @@
 // Importamos os decoradores e classes necessárias do NestJS, além do serviço UserService, que contém a lógica do usuário.
-import { Controller, Get, Post, Body, HttpCode, Patch, Delete, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpCode, Patch, Delete, UseGuards, UseInterceptors, UploadedFile, BadRequestException, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator } from '@nestjs/common';
 import { UserService } from './users.services';
 import { CreateUserDto } from './domain/dto/createUser.dto';
 import { UpdateUserDto } from './domain/dto/updateUser.dto';
@@ -12,6 +12,7 @@ import { RoleGuard } from 'src/shared/guards/role.guards';
 import { UserMatch } from 'src/shared/guards/userMatch.guard';
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { FileValidationInterceptor } from 'src/shared/interceptors/fileValidation.interceptor';
 
 // Definimos o controlador de rota para 'users' e injetamos o UserService para manipulação de dados de usuário.
 @UseGuards(AuthGuard,RoleGuard,ThrottlerGuard )
@@ -58,9 +59,17 @@ export class UserController {
     }
 
     @Post('avatar')
+    @UseInterceptors(FileInterceptor('avatar'), FileValidationInterceptor) 
     uploadAvatar(
       @User('id') id: number,
-      @UploadedFile() avatar: Express.Multer.File,
+      @UploadedFile(
+        new ParseFilePipe({
+          validators: [
+            new FileTypeValidator({ fileType: 'image/*' }),
+            new MaxFileSizeValidator({ maxSize: 1024 * 1024 }), 
+          ],
+        })
+      ) avatar: Express.Multer.File,
     ) {
       console.log('Uploaded file:', avatar); // Debug
       if (!avatar) {
@@ -69,10 +78,4 @@ export class UserController {
       return this.userService.uploadAvatar(id, avatar.filename);
     }
     
-    // @UseInterceptors(FileInterceptor('avatar'))
-    // @Post('avatar')
-    // uploadAvatar(@UploadedFile() avatar: Express.Multer.File) {
-    //     console.log(avatar);
-    //     return
-    // }
 }

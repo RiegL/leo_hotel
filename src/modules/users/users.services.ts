@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { userSelectFields } from '../prisma/utils/userSelectFields';
 import { join, resolve } from 'path';
 import { stat, unlink } from 'fs/promises';
+import { existsSync, mkdirSync } from 'fs';
 
 // Define o serviço UserService com a lógica de manipulação de usuários.
 @Injectable()
@@ -79,24 +80,38 @@ export class UserService {
   }
 
 
-  async uploadAvatar(id:number, avatarFilename:string){
-   const user = await this.isIdExists(id);
-
-    const directory = resolve(__dirname, '..', '..','..', 'uploads');
-
-    if(user.avatar){
-      const userAvatarPath = join(directory, user.avatar);
-      const userAvatarFileExists = await stat(userAvatarPath);
-
-      if(userAvatarFileExists){
-        await unlink(userAvatarPath);
-      }
-
+  async uploadAvatar(id: number, avatarFilename: string) {
+    const user = await this.isIdExists(id);
+  
+    // Define o diretório de uploads
+    const directory = resolve(__dirname, '..', '..', '..', 'uploads');
+  
+    // Garante que a pasta de uploads existe
+    if (!existsSync(directory)) {
+      mkdirSync(directory, { recursive: true });
     }
-
-    const userUpdate = await this.update(id, {avatar: avatarFilename});
-
-    return userUpdate
+  
+    // Verifica e remove o avatar antigo, se existir
+    if (user.avatar) {
+      const userAvatarPath = join(directory, user.avatar);
+      try {
+        // Verifica se o arquivo existe antes de tentar removê-lo
+        await stat(userAvatarPath);
+        await unlink(userAvatarPath); // Remove o arquivo
+      } catch (error) {
+        if (error.code !== 'ENOENT') {
+          // Lança outros erros que não sejam "Arquivo não encontrado"
+          console.error('Erro ao verificar/remover o avatar antigo:', error);
+          throw error;
+        }
+      }
+    }
+  
+    // Atualiza o registro do usuário com o novo avatar
+    const userUpdate = await this.update(id, { avatar: avatarFilename });
+  
+    
+    return userUpdate;
   }
 
 
