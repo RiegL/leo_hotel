@@ -5,7 +5,7 @@ import { UpdateHotelDTO } from './domain/dto/update-hotel.dto';
 @Injectable()
 export class UpdateHotelsService {
 
-  update(id: number, updateHotelDto: UpdateHotelDTO) {
+  update(id: number, UpdateHotelDTO: UpdateHotelDTO) {
     return `This action updates a #${id} hotel`;
   }
 
