@@ -11,6 +11,7 @@ import { UserModule } from './modules/users/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { HotelsModule } from './modules/hotels/hotels.module';
 
 // Definimos o módulo principal da aplicação, AppModule.
 @Module({
@@ -30,7 +31,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
       defaults: {
         from: `leo_hotel <${process.env.EMAIL_USER}>`,
       }
-    })
+    }),
+    HotelsModule
   ],
   providers: [
     {
