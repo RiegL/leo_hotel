@@ -35,7 +35,7 @@ model Hotel {
   image       String?
   price       Float
   ownerId     Int
-  owner User @relation(fields:[ownerId], references:[id])
+  owner User  @relation(fields:[ownerId], references:[id])
   createdAt   DateTime @default(now())
   updateAt    DateTime @updatedAt
 
