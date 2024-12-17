@@ -21,11 +21,11 @@ export class CreateHotelDto {
   @MaxLength(255)
   image?: string;
 
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsNumber()
   @IsNotEmpty()
   price: number;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   ownerId: number;
 }

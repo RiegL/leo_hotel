@@ -12,25 +12,24 @@ export class HotelsRepositories implements IHotelRepository {
         return this.prisma.hotel.create({ data });
     }
 
-
-
-
     findHotelById(id: number): Promise<Hotel | null> {
-        throw new Error("Method not implemented.");
+       console.log(id);
+       return null;
     }
     findHotelByName(name: string): Promise<Hotel | null> {
-        throw new Error("Method not implemented.");
+        console.log(name);
+        return null;
     }
     findHotels(): Promise<Hotel[]> {
         throw new Error("Method not implemented.");
     }
     updateHotel(id: number, data: CreateHotelDto): Promise<Hotel> {
-        throw new Error("Method not implemented.");
+        console.log(id,data);   
+        return null;
     }
     deleteHotel(id: number): Promise<void> {
-        throw new Error("Method not implemented.");
+        console.log(id); 
+        return null; 
     }
-    count(): Promise<number> {
-        throw new Error("Method not implemented.");
-    }
+    
 }

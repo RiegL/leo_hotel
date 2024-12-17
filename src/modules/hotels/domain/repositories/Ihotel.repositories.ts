@@ -8,6 +8,6 @@ export interface IHotelRepository {
     findHotels(): Promise<Hotel[]>;
     updateHotel(id: number, data: CreateHotelDto): Promise<Hotel>;
     deleteHotel(id: number): Promise<void>;
-    count(): Promise<number>;
+
     }
     

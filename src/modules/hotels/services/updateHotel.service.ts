@@ -6,7 +6,7 @@ import { UpdateHotelDto } from '../domain/dto/update-hotel.dto';
 export class UpdateHotelsService {
 
   update(id: number, UpdateHotelDto: UpdateHotelDto) {
-    return `This action updates a #${id} hotel`;
+    return `This action updates a #${id} hotel ${UpdateHotelDto}`;
   }
 
 }
