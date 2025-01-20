@@ -13,16 +13,19 @@ export class HotelsRepositories implements IHotelRepository {
     }
 
     findHotelById(id: number): Promise<Hotel | null> {
-       console.log(id);
-       return null;
+        return this.prisma.hotel.findUnique({where: {id}});
     }
     findHotelByName(name: string): Promise<Hotel | null> {
-        console.log(name);
-        return null;
+        return this.prisma.hotel.findFirst({where: {name}});
     }
     findHotels(): Promise<Hotel[]> {
-        throw new Error("Method not implemented.");
+        return this.prisma.hotel.findMany();
     }
+
+    findHotelByOwner(ownerId: number): Promise<Hotel[]> {
+        return this.prisma.hotel.findMany({where: {ownerId}})
+    }
+
     updateHotel(id: number, data: CreateHotelDto): Promise<Hotel> {
         console.log(id,data);   
         return null;

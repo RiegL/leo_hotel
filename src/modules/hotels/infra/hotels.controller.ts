@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 
 import { CreateHotelDto } from '../domain/dto/create-hotel.dto';
 import { UpdateHotelDto } from '../domain/dto/update-hotel.dto';
@@ -7,6 +7,9 @@ import { FindAllHotelsService } from '../services/findAllHotel.service';
 import { FindOneHotelsService } from '../services/findOneHotel.service';
 import { UpdateHotelsService } from '../services/updateHotel.service';
 import { RemoveHotelsService } from '../services/removeHotel.service';
+import { FindByNameHotelsService } from '../services/findByNameHotel.service';
+import { FindByOwnerHotelsService } from '../services/findByOwnerHotel.service';
+import { ParamId } from 'src/shared/decorators/paramId.decorator';
 
 @Controller('hotels')
 export class HotelsController {
@@ -16,6 +19,8 @@ export class HotelsController {
     private readonly findAllHotelService: FindAllHotelsService,
     private readonly updateHotelService: UpdateHotelsService,
     private readonly removeHotelService: RemoveHotelsService,
+    private readonly findByNameService : FindByNameHotelsService,
+    private readonly findByOwnerService : FindByOwnerHotelsService 
   ) {}
 
   @Post()
@@ -28,18 +33,28 @@ export class HotelsController {
     return this.findAllHotelService.findAll();
   }
 
+  @Get(':ownerId')
+  findOwner(@ParamId('') id:number) {
+    return this.findByOwnerService.findByOwner(id);
+  }
+
+  @Get('name')
+  findName(@Query('name') name:string) {
+    return this.findByNameService.findByName(name);
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@ParamId() id: number) {
     return this.findOneHotelService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateHotelDto: UpdateHotelDto) {
+  update(@ParamId() id: number, @Body() updateHotelDto: UpdateHotelDto) {
     return this.updateHotelService.update(+id, updateHotelDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@ParamId() id: number) {
     return this.removeHotelService.remove(+id);
   }
 }
