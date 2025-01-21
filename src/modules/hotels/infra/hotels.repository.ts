@@ -3,33 +3,36 @@ import { CreateHotelDto } from "../domain/dto/create-hotel.dto";
 import { IHotelRepository } from "../domain/repositories/Ihotel.repositories";
 import { PrismaService } from "src/modules/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
+import { UpdateHotelDto } from "../domain/dto/update-hotel.dto";
 
 
 @Injectable()
 export class HotelsRepositories implements IHotelRepository {
     constructor(private readonly prisma: PrismaService) {}
+
     create(data: CreateHotelDto): Promise<Hotel> {
         return this.prisma.hotel.create({ data });
     }
 
     findHotelById(id: number): Promise<Hotel | null> {
-       console.log(id);
-       return null;
+        return this.prisma.hotel.findUnique({where: {id}});
     }
     findHotelByName(name: string): Promise<Hotel | null> {
-        console.log(name);
-        return null;
+        return this.prisma.hotel.findFirst({where: {name}});
     }
     findHotels(): Promise<Hotel[]> {
-        throw new Error("Method not implemented.");
+        return this.prisma.hotel.findMany();
     }
-    updateHotel(id: number, data: CreateHotelDto): Promise<Hotel> {
-        console.log(id,data);   
-        return null;
+
+    findHotelByOwner(ownerId: number): Promise<Hotel[]> {
+        return this.prisma.hotel.findMany({where: {ownerId}})
+    }
+
+    updateHotel(id: number, data: UpdateHotelDto): Promise<Hotel> {
+        return this.prisma.hotel.update({where: {id}, data});
     }
     deleteHotel(id: number): Promise<void> {
-        console.log(id); 
-        return null; 
+        throw new Error("Method not implemented.");
     }
     
 }
