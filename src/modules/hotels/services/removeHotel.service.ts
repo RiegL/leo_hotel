@@ -10,5 +10,6 @@ export class RemoveHotelsService {
   ) {}
   remove(id: number) {
     return this.hotelRepositories.deleteHotel(id);
+    
   }
 }
