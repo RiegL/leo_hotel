@@ -15,6 +15,7 @@ import { UserModule } from '../users/user.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
+import { uploadImageHotelService } from './services/uploadImageHotel.service';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { v4 as uuidv4 } from 'uuid';
     UserModule,
     MulterModule.register({
       storage: diskStorage({
-        destination: './uploads',
+        destination: './uploads-hotel',
         filename: (req, file, cb) => {
           const filename = `${uuidv4()}-${file.originalname}`;
           return cb(null, filename);
@@ -41,6 +42,7 @@ import { v4 as uuidv4 } from 'uuid';
     RemoveHotelsService,
     FindByNameHotelsService,
     FindByOwnerHotelsService,
+    uploadImageHotelService,
     {
       provide: HOTEL_REPOSITORY_TOKENS,
       useClass: HotelsRepositories,
