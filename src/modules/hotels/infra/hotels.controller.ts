@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, UploadedFiles, UploadedFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator, UseInterceptors } from '@nestjs/common';
 
 import { CreateHotelDto } from '../domain/dto/create-hotel.dto';
 import { UpdateHotelDto } from '../domain/dto/update-hotel.dto';
@@ -16,6 +16,9 @@ import { Roles } from 'src/shared/decorators/roles.decorators';
 import { Role } from '@prisma/client';
 import { OwnerHotelGuard } from 'src/shared/guards/ownerHotel.guard';
 import { User } from 'src/shared/decorators/user.decorator';
+import { uploadImageHotelService } from '../services/uploadImageHotel.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileValidationInterceptor } from 'src/shared/interceptors/fileValidation.interceptor';
 
 
 @UseGuards(AuthGuard, RoleGuard)
@@ -28,7 +31,8 @@ export class HotelsController {
     private readonly updateHotelService: UpdateHotelsService,
     private readonly removeHotelService: RemoveHotelsService,
     private readonly findByNameService : FindByNameHotelsService,
-    private readonly findByOwnerService : FindByOwnerHotelsService 
+    private readonly findByOwnerService : FindByOwnerHotelsService ,
+    private readonly uploadImageHotelService : uploadImageHotelService
   ) {}
 
   @Roles(Role.ADMIN)
@@ -61,6 +65,27 @@ export class HotelsController {
   findOne(@ParamId() id: number) {
     return this.findOneHotelService.findOne(+id);
   }
+
+ @UseInterceptors(FileInterceptor('image'), FileValidationInterceptor) 
+@Patch('image/:hotelId')
+uploadImage(@Param('hotelId') id:string,
+ @UploadedFile(
+  new ParseFilePipe({
+    validators: [
+      new FileTypeValidator({
+         fileType: 'image/*'
+     }),
+     new MaxFileSizeValidator({
+         maxSize: 1024 * 1024
+     }),
+    ],
+  })
+ ) 
+ image: Express.Multer.File,
+){ 
+  return this.uploadImageHotelService.execute(id,image.filename);
+}
+
 
   @UseGuards(OwnerHotelGuard)
   @Roles(Role.ADMIN, )

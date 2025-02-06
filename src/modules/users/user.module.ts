@@ -21,7 +21,7 @@ import { v4 as uuidv4 } from 'uuid';
             return cb(null, filename);
           },
         })
-      })
+      }),
     ],
     // Define o UserController como controlador do módulo.
     controllers: [UserController],
