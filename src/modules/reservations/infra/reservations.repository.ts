@@ -2,11 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { IReservationRepository } from "../domain/repositories/Ireservations.repository";
 import { Reservation } from "@prisma/client";
 import { CreateReservationDto } from "../domain/dto/create-reservation.dto";
+import { PrismaService } from "src/modules/prisma/prisma.service";
 
 @Injectable()
 export class ReservationRepository implements IReservationRepository{
-    create(data: CreateReservationDto): Promise<Reservation> {
-        throw new Error("Method not implemented.");
+    constructor(private readonly prisma: PrismaService) {}
+    create( data: any): Promise<Reservation> {
+       return this.prisma.reservation.create({data})
     }
 
 }
