@@ -9,11 +9,11 @@ export class CreateReservationDto {
 
   @IsString()
   @IsNotEmpty()
-  checkIn: String;
+  checkIn: string;
 
   @IsString()
   @IsNotEmpty()
-  checkOut: String;
+  checkOut: string;
 
   @IsEnum(ReservationStatus)
   @IsOptional()

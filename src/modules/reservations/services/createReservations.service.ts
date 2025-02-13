@@ -5,11 +5,13 @@ import { IReservationRepository } from '../domain/repositories/Ireservations.rep
 import {differenceInDays, parseISO} from 'date-fns';
 import { IHotelRepository } from 'src/modules/hotels/domain/repositories/Ihotel.repositories';
 import { Reservation, ReservationStatus } from '@prisma/client';
+import { REPOSITORY_TOKEN_HOTEL } from 'src/modules/hotels/utils/repositoriesTokens';
 @Injectable()
 export class CreateReservationsService {
   constructor(
     @Inject(forwardRef(() => REPOSITORY_TOKEN_RESERVATION))
     private readonly reservationRepository: IReservationRepository,
+    @Inject(forwardRef(() =>REPOSITORY_TOKEN_HOTEL))
     private readonly hotelRepository: IHotelRepository
   ) {}
 
@@ -35,8 +37,8 @@ export class CreateReservationsService {
    const total = dayOfStay * hotel.price;
 
    const newReservation = {
-    checkIn: checkInDate,
-    checkOut: checkOutDate,
+    checkIn: checkInDate.toISOString(),
+    checkOut: checkOutDate.toISOString(),
     total: total,
     userId: id,
     hotelId: data.hotelId,
