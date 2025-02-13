@@ -6,13 +6,21 @@ import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../users/user.module';
 import { HotelsModule } from '../hotels/hotels.module';
 import { REPOSITORY_TOKEN_RESERVATION } from './utils/repositoriesTokens';
+import {REPOSITORY_TOKEN_HOTEL} from '../hotels/utils/repositoriesTokens'
 
 @Module({
-  imports:[PrismaModule, AuthModule, UserModule, HotelsModule],
+  imports: [PrismaModule, AuthModule, UserModule, HotelsModule],
   controllers: [ReservationsController],
-  providers: [CreateReservationsService, {
-    provide: REPOSITORY_TOKEN_RESERVATION,
-    useClass: ReservationsController
-  }],
+  providers: [
+    CreateReservationsService,
+    {
+      provide: REPOSITORY_TOKEN_RESERVATION,
+      useClass: ReservationsController,
+    },
+    {
+      provide: REPOSITORY_TOKEN_HOTEL,
+      useClass: ReservationsController,
+    },
+  ],
 })
 export class ReservationsModule {}
