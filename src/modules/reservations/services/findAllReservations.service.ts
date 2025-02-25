@@ -6,14 +6,13 @@ import { IReservationRepository } from "../domain/repositories/Ireservations.rep
 
 @Injectable()
 export class FindAllReservationsService{
-
 constructor(
     @Inject(REPOSITORY_TOKEN_RESERVATION)
     private readonly reservationRepository: IReservationRepository,
-) {}
+) { }
 
     async execute() {
-        return this.reservationRepository.findAll();
+        return await this.reservationRepository.findAll();
     }
 
 

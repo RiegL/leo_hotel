@@ -1,24 +1,26 @@
-import { Injectable } from "@nestjs/common";
-import { IReservationRepository } from "../domain/repositories/Ireservations.repository";
-import { Reservation } from "@prisma/client";
-import { PrismaService } from "src/modules/prisma/prisma.service";
+// reservations.repository.ts
+import { Injectable } from '@nestjs/common';
+import { IReservationRepository } from '../domain/repositories/Ireservations.repository';
+import { Reservation } from '@prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
-export class ReservationRepository implements IReservationRepository{
-    constructor(private readonly prisma: PrismaService) {}
-    create( data: any): Promise<Reservation> {
-       return this.prisma.reservation.create({data})
-    }
+export class ReservationsRepository implements IReservationRepository {
+  constructor(private readonly prisma: PrismaService) {}
 
-    findById(id: number): Promise<Reservation | null> {
-        return this.prisma.reservation.findUnique({where: {id}});
-    }
+  async create(data: any): Promise<Reservation> {
+    return this.prisma.reservation.create({ data });
+  }
 
-    findAll(): Promise<Reservation[]> {
-        return this.prisma.reservation.findMany();
-    }
+  async findById(id: number): Promise<Reservation | null> {
+    return this.prisma.reservation.findUnique({ where: { id } });
+  }
 
-    findByUser(userId: number): Promise<Reservation[]> {
-        return this.prisma.reservation.findMany({where: {userId}});
-    }
+  async findAll(): Promise<Reservation[]> {
+    return this.prisma.reservation.findMany();
+  }
+
+  async findByUser(userId: number): Promise<Reservation[]> {
+    return this.prisma.reservation.findMany({ where: { userId } });
+  }
 }
