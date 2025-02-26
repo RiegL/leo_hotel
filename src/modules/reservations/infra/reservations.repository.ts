@@ -5,7 +5,7 @@ import { Reservation } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
-export class ReservationsRepository implements IReservationRepository {
+export class ReservationsRepositories implements IReservationRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: any): Promise<Reservation> {

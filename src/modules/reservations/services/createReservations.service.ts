@@ -9,9 +9,9 @@ import { REPOSITORY_TOKEN_HOTEL } from 'src/modules/hotels/utils/repositoriesTok
 @Injectable()
 export class CreateReservationsService {
   constructor(
-    @Inject(forwardRef(() => REPOSITORY_TOKEN_RESERVATION))
+    @Inject(REPOSITORY_TOKEN_RESERVATION)
     private readonly reservationRepository: IReservationRepository,
-    @Inject(forwardRef(() =>REPOSITORY_TOKEN_HOTEL))
+    @Inject(REPOSITORY_TOKEN_HOTEL)
     private readonly hotelRepository: IHotelRepository
   ) {}
 

@@ -10,7 +10,7 @@ import { REPOSITORY_TOKEN_HOTEL } from '../hotels/utils/repositoriesTokens';
 import { FindAllHotelsService } from '../hotels/services/findAllHotel.service';
 import { FindByUserReservationsService } from './services/findByUserReservations.service';
 import { FindByIdReservationsService } from './services/findByIdReservations.service';
-import { ReservationsRepository } from './infra/reservations.repository';
+import { ReservationsRepositories } from './infra/reservations.repository';
 import { HotelsRepositories } from '../hotels/infra/hotels.repository';
 
 @Module({
@@ -23,7 +23,7 @@ import { HotelsRepositories } from '../hotels/infra/hotels.repository';
     FindByUserReservationsService,
     {
       provide: REPOSITORY_TOKEN_RESERVATION,
-      useClass: ReservationsRepository,
+      useClass: ReservationsRepositories,
     },
     {
       provide: REPOSITORY_TOKEN_HOTEL,
