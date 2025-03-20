@@ -38,7 +38,6 @@ import { uploadImageHotelService } from './services/uploadImageHotel.service';
     FindOneHotelsService,
     FindAllHotelsService,
     UpdateHotelsService,
-    CreateHotelsService,
     RemoveHotelsService,
     FindByNameHotelsService,
     FindByOwnerHotelsService,

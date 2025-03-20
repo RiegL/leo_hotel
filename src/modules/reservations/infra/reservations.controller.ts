@@ -1,12 +1,13 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { CreateReservationDto } from '../domain/dto/create-reservation.dto';
 // import { UpdateReservationDto } from '../domain/dto/update-reservation.dto';
-import { AuthGuard } from '@nestjs/passport';
+
 import { User } from 'src/shared/decorators/user.decorator';
 import { FindByIdReservationsService } from '../services/findByIdReservations.service';
 import { FindAllReservationsService } from '../services/findAllReservations.service';
 import { CreateReservationsService } from '../services/createReservations.service';
 import { FindByUserReservationsService } from '../services/findByUserReservations.service';
+import { AuthGuard } from 'src/shared/guards/auth.guards';
 
 
 @UseGuards(AuthGuard)

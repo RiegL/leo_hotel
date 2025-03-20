@@ -12,8 +12,8 @@ export class ReservationsRepositories implements IReservationRepository {
     return this.prisma.reservation.create({ data });
   }
 
-  async findById(id: number): Promise<Reservation | null> {
-    return this.prisma.reservation.findUnique({ where: { id } });
+  async findById(id: number): Promise<Reservation> {
+    return this.prisma.reservation.findUnique({where: { id },});
   }
 
   async findAll(): Promise<Reservation[]> {
@@ -21,6 +21,9 @@ export class ReservationsRepositories implements IReservationRepository {
   }
 
   async findByUser(userId: number): Promise<Reservation[]> {
-    return this.prisma.reservation.findMany({ where: { userId } });
+    return this.prisma.reservation.findMany({
+      where: { userId },
+    });
   }
+  
 }
