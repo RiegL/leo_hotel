@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateReservationDto } from '../domain/dto/create-reservation.dto';
 // import { UpdateReservationDto } from '../domain/dto/update-reservation.dto';
 
@@ -7,8 +16,9 @@ import { FindByIdReservationsService } from '../services/findByIdReservations.se
 import { FindAllReservationsService } from '../services/findAllReservations.service';
 import { CreateReservationsService } from '../services/createReservations.service';
 import { FindByUserReservationsService } from '../services/findByUserReservations.service';
+import { UpdateStatusReservationsService } from '../services/updateStatusReservations.service';
 import { AuthGuard } from 'src/shared/guards/auth.guards';
-
+import { ReservationStatus } from '@prisma/client';
 
 @UseGuards(AuthGuard)
 @Controller('reservations')
@@ -17,11 +27,12 @@ export class ReservationsController {
     private readonly createReservationsService: CreateReservationsService,
     private readonly findAllReservationsService: FindAllReservationsService,
     private readonly findByIdReservationsService: FindByIdReservationsService,
-    private readonly findByUserReservationsService: FindByUserReservationsService
+    private readonly findByUserReservationsService: FindByUserReservationsService,
+    private readonly updateStatusReservationsService: UpdateStatusReservationsService
   ) {}
 
   @Post()
-  create(@User('id') id:number, @Body() body: CreateReservationDto) {
+  create(@User('id') id: number, @Body() body: CreateReservationDto) {
     return this.createReservationsService.create(id, body);
   }
 
@@ -30,22 +41,23 @@ export class ReservationsController {
     return this.findAllReservationsService.execute();
   }
 
-
   @Get('user')
-  findByUser(@User('id') id:number) {
+  findByUser(@User('id') id: number) {
     return this.findByUserReservationsService.execute(id);
   }
-  
+
   @Get(':id')
   findOne(@Param() id: number) {
     return this.findByIdReservationsService.execute(id);
   }
 
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
-  //   return this.reservationsService.update(+id, updateReservationDto);
-  // }
+  @Patch(':id')
+  updateStatus(
+    @Param() id: number,
+    @Body('status') status: ReservationStatus,
+  ) {
+    return this.updateStatusReservationsService.execute(id, status);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

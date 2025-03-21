@@ -11,7 +11,20 @@ constructor(
     private readonly reservationRepository: IReservationRepository,
 ) { }
 
-    async execute() {
+    async execute(page:number=1,limit:number=10) {
+
+        // const offSet = (page -1) * limit
+        // const data = await this.reservationRepository.findAll(offSet,limit);
+        // const total = await this.reservationRepository.countReservations()
+
+        // return{
+        //     total,
+        //     page,
+        //     per_page:limit,
+        //     data
+        // }
+
+
         return await this.reservationRepository.findAll();
     }
 

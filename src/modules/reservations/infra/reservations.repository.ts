@@ -1,12 +1,13 @@
 // reservations.repository.ts
 import { Injectable } from '@nestjs/common';
 import { IReservationRepository } from '../domain/repositories/Ireservations.repository';
-import { Reservation } from '@prisma/client';
+import { Reservation, ReservationStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class ReservationsRepositories implements IReservationRepository {
   constructor(private readonly prisma: PrismaService) {}
+
 
   async create(data: any): Promise<Reservation> {
     return this.prisma.reservation.create({ data });
@@ -25,5 +26,7 @@ export class ReservationsRepositories implements IReservationRepository {
       where: { userId },
     });
   }
-  
+  async updateStatus(id: number, status: ReservationStatus): Promise<Reservation> {
+   return this.prisma.reservation.update({where:{id},data:{status}})
+  }
 }
