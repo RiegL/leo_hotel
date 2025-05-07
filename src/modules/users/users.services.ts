@@ -9,7 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 import { CreateUserDto } from './domain/dto/createUser.dto';
 import { UpdateUserDto } from './domain/dto/updateUser.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { userSelectFields } from '../prisma/utils/userSelectFields';
 import { join, resolve } from 'path';
 import { stat, unlink } from 'fs/promises';

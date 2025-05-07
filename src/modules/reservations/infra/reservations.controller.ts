@@ -33,7 +33,7 @@ export class ReservationsController {
 
   @Post()
   create(@User('id') id: number, @Body() body: CreateReservationDto) {
-    return this.createReservationsService.create(id, body);
+    return this.createReservationsService.execute(id, body);
   }
 
   @Get()

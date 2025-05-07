@@ -16,7 +16,7 @@ export class CreateReservationsService {
     private readonly hotelRepository: IHotelRepository
   ) {}
 
-  async create(id: number ,data: CreateReservationDto) {
+  async execute(id: number ,data: CreateReservationDto) {
     const checkInDate = parseISO(data.checkIn);
     const checkOutDate = parseISO(data.checkOut);
     const dayOfStay  = differenceInDays(checkInDate,checkOutDate);
