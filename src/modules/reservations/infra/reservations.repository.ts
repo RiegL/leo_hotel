@@ -27,6 +27,7 @@ export class ReservationsRepositories implements IReservationRepository {
     });
   }
   async updateStatus(id: number, status: ReservationStatus): Promise<Reservation> {
+      console.log('Atualizando status da reserva', { id, status });
    return this.prisma.reservation.update({where:{id},data:{status}})
   }
 }

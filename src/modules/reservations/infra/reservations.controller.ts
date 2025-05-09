@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CreateReservationDto } from '../domain/dto/create-reservation.dto';
 // import { UpdateReservationDto } from '../domain/dto/update-reservation.dto';
@@ -18,7 +19,9 @@ import { CreateReservationsService } from '../services/createReservations.servic
 import { FindByUserReservationsService } from '../services/findByUserReservations.service';
 import { UpdateStatusReservationsService } from '../services/updateStatusReservations.service';
 import { AuthGuard } from 'src/shared/guards/auth.guards';
-import { ReservationStatus } from '@prisma/client';
+import { ReservationStatus, Role } from '@prisma/client';
+import { Roles } from 'src/shared/decorators/roles.decorators';
+import { ParamId } from 'src/shared/decorators/paramId.decorator';
 
 @UseGuards(AuthGuard)
 @Controller('reservations')
@@ -28,9 +31,9 @@ export class ReservationsController {
     private readonly findAllReservationsService: FindAllReservationsService,
     private readonly findByIdReservationsService: FindByIdReservationsService,
     private readonly findByUserReservationsService: FindByUserReservationsService,
-    private readonly updateStatusReservationsService: UpdateStatusReservationsService
+    private readonly updateStatusReservationsService: UpdateStatusReservationsService,
   ) {}
-
+  @Roles(Role.USER)
   @Post()
   create(@User('id') id: number, @Body() body: CreateReservationDto) {
     return this.createReservationsService.execute(id, body);
@@ -47,16 +50,16 @@ export class ReservationsController {
   }
 
   @Get(':id')
-  findOne(@Param() id: number) {
+  findOne(@ParamId() id: number) {
     return this.findByIdReservationsService.execute(id);
   }
-
-  @Patch(':id')
+  @Roles(Role.ADMIN)
+  @Patch(':id/status')
   updateStatus(
-    @Param() id: number,
+    @ParamId() id:number,
     @Body('status') status: ReservationStatus,
   ) {
-    return this.updateStatusReservationsService.execute(id, status);
+    return this.updateStatusReservationsService.execute(id,status);
   }
 
   // @Delete(':id')

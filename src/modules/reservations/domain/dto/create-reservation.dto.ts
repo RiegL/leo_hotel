@@ -17,6 +17,6 @@ export class CreateReservationDto {
 
   @IsEnum(ReservationStatus)
   @IsOptional()
-  @Transform(value => value ?? ReservationStatus.PENDING)
+  @Transform(({ value }) => value ?? ReservationStatus.PENDING)
   status : ReservationStatus
 }
